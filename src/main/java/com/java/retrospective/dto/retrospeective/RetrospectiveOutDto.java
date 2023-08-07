@@ -1,36 +1,18 @@
-package com.java.retrospective.entity;
+package com.java.retrospective.dto.retrospeective;
 
+import com.java.retrospective.entity.SwimlaneEntity;
 import lombok.*;
 
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name="retrospective")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @ToString
-public class RetrospectiveEntity {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column
-    private Integer id;
-    @Column
-    @NonNull private String title;
-    @Column
+public class RetrospectiveOutDto {
+    private String title;
     private String description;
-    @OneToMany(mappedBy = "retrospective")
-    @NonNull private List<SwimlaneEntity> swimlanes= new ArrayList<>();
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private List<SwimlaneEntity> swimlanes;
 
     public String getTitle() {
         return title;

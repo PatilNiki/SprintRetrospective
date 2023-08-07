@@ -1,5 +1,6 @@
 package com.java.retrospective.controller;
 
+import com.java.retrospective.dto.swimlane.SwimlaneDto;
 import com.java.retrospective.entity.SwimlaneEntity;
 import com.java.retrospective.services.SwimlaneService;
 import lombok.AllArgsConstructor;
@@ -10,24 +11,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping(value = "/retrospective/{retro_id}/swimlanes")
 @AllArgsConstructor
 public class SwimlaneController {
+    @Autowired
     SwimlaneService swimlaneService;
 
-    @GetMapping(value = "retrospective/{retro_id}/swimlanes")
-    public void getSwimlanes(@PathVariable Integer retro_id){
-        List<SwimlaneEntity> swimlanes = swimlaneService.getAllSwimlanes().stream().filter(swimlane->swimlane.getRetrospective().getId()==retro_id).collect(Collectors.toList());
-        swimlanes.forEach(swimlane-> System.out.println("Title: "+swimlane.getTitle()));
+    @GetMapping
+    public List<SwimlaneDto> getSwimlanes(@PathVariable Integer retro_id){
+        return swimlaneService.getAllSwimlanes(retro_id);
     }
 
-    @PostMapping(value = "retrospective/{retro_id}/swimlanes")
-    public String addSwimlanes(@PathVariable Integer retro_id, @RequestBody SwimlaneEntity swimlane){
-        return "Added: "+swimlaneService.addSwimlane(swimlane);
+    @PostMapping
+    public String addSwimlanes(@PathVariable Integer retro_id, @RequestBody String swimlane_title){
+        return "Added: "+swimlaneService.addSwimlane(retro_id, swimlane_title);
     }
 
-    @DeleteMapping(value = "retrospective/{retro_id}/swimlanes/{id}")
+    @DeleteMapping(value = "/{id}")
     public String deleteSwimlane(@PathVariable Integer retro_id, @PathVariable Integer id){
-        return "Deleted: "+swimlaneService.deleteSwimlane(id);
+        return "Deleted: "+swimlaneService.deleteSwimlane(retro_id, id);
     }
 
 

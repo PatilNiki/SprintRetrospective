@@ -1,40 +1,45 @@
 package com.java.retrospective.controller;
 
 import com.java.retrospective.dao.RetrospectiveDao;
+import com.java.retrospective.dto.retrospeective.RetrospectiveInDto;
+import com.java.retrospective.dto.retrospeective.RetrospectiveOutDto;
 import com.java.retrospective.entity.RetrospectiveEntity;
 import com.java.retrospective.services.RetrospectiveService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequestMapping(value = "/retrospectives")
 @AllArgsConstructor
 public class RetrospectiveController {
+    @Autowired
     RetrospectiveService retrospectiveService;
 
-    @GetMapping(value = "/retrospectives")
-    public String getRetrospectives(){
-        retrospectiveService.getAllRetrospectives().forEach(retrospective -> System.out.println("Title: "+retrospective.getTitle()+" Description: "+retrospective.getDescription()));
-        return "";
+    @GetMapping
+    public List<RetrospectiveOutDto> getRetrospectives(){
+        return retrospectiveService.getAllRetrospectives();
     }
 
-    @PostMapping(value = "/retrospectives")
-    public String addRetrospective(@RequestBody RetrospectiveEntity retrospective){
-        return "Added: "+ retrospectiveService.addRetrospective(retrospective);
+    @PostMapping
+    public RetrospectiveOutDto addRetrospective(@RequestBody RetrospectiveInDto retrospective){
+        return retrospectiveService.addRetrospective(retrospective);
     }
 
-    @GetMapping(value = "/retrospectives/{id}")
-    public String getRetrospective(@PathVariable Integer id){
-        return "Retrospective: "+ retrospectiveService.getRetrospective(id);
+    @GetMapping(value = "/{id}")
+    public RetrospectiveOutDto getRetrospective(@PathVariable Integer id){
+        return retrospectiveService.getRetrospective(id);
     }
 
-    @DeleteMapping(value = "/retrospectives/{id}")
+    @DeleteMapping(value = "/{id}")
     public String deleteRetrospective(@PathVariable Integer id){
         return "Deleted: "+ retrospectiveService.deleteRetrospective(id);
     }
 
-    @PutMapping(value = "/retrospectives/{id}")
-    public String updateRetrospective(@PathVariable Integer id, @RequestBody RetrospectiveEntity retrospective){
-        return "Updated: "+retrospectiveService.updateRetrospective(id, retrospective);
+    @PutMapping(value = "/{id}")
+    public RetrospectiveOutDto updateRetrospective(@PathVariable Integer id, @RequestBody RetrospectiveInDto retrospective){
+        return retrospectiveService.updateRetrospective(id, retrospective);
     }
 }

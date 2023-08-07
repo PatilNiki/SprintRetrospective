@@ -1,5 +1,6 @@
 package com.java.retrospective.services;
 
+import com.java.retrospective.dto.user.UserDto;
 import com.java.retrospective.entity.UserEntity;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,6 @@ import org.springframework.stereotype.Service;
 
 public interface UserService {
 
-    UserEntity addUser(UserEntity user);
-    List<UserEntity> getAllUsers();
+    UserDto addUser(UserDto user);
+    List<UserDto> getAllUsers();
 }

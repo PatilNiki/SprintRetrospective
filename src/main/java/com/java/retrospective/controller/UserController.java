@@ -1,32 +1,31 @@
 package com.java.retrospective.controller;
 
 import com.java.retrospective.dto.user.UserDto;
-import com.java.retrospective.entity.UserEntity;
 import com.java.retrospective.services.UserService;
-import com.java.retrospective.services.mapping.UserMappingService;
+import com.java.retrospective.services.mappers.UserMappingService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 @RestController
+@RequestMapping(value = "/users")
 @AllArgsConstructor
 public class UserController {
+    @Autowired
     private UserService userService;
+    @Autowired
     private UserMappingService userServicerMappingService;
-    @PostMapping(value = "/users")
-    public String addUsers(@RequestBody UserEntity user){
+    @PostMapping
+    public String addUsers(@RequestBody UserDto user){
         userService.addUser(user);
         return "User registration successful!";
     }
 
-    @GetMapping(value="/users")
-    public String getAllUsers(){
-
-        userService.getAllUsers().forEach(user-> System.out.println("Username: "+user.getUsername()+" Password: "+user.getPassword()));
-        return "";
+    @GetMapping
+    public List<UserDto> getAllUsers(){
+        List<UserDto> userDtos=userService.getAllUsers();
+        return userDtos;
     }
 
 }

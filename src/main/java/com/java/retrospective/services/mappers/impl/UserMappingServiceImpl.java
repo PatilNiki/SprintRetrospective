@@ -1,9 +1,9 @@
-package com.java.retrospective.services.mapping.impl;
+package com.java.retrospective.services.mappers.impl;
 
 import com.java.retrospective.dao.UserDao;
 import com.java.retrospective.dto.user.UserDto;
 import com.java.retrospective.entity.UserEntity;
-import com.java.retrospective.services.mapping.UserMappingService;
+import com.java.retrospective.services.mappers.UserMappingService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
