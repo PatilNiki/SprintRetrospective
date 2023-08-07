@@ -1,22 +1,22 @@
 package com.java.retrospective.services.impl;
 
-import com.java.retrospective.dao.MessageDao;
-import com.java.retrospective.dto.message.MessageDto;
-import com.java.retrospective.dto.user.UserDto;
-import com.java.retrospective.entity.MessageEntity;
-import com.java.retrospective.entity.UserEntity;
-import com.java.retrospective.services.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.java.retrospective.dao.MessageDao;
+import com.java.retrospective.dto.message.MessageDto;
+import com.java.retrospective.entity.MessageEntity;
+import com.java.retrospective.services.MessageService;
+
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    @Autowired
-    private MessageDao messageDao;
+    private final MessageDao messageDao;
 
     @Override
     public List<MessageDto> getAllMessages(Integer retro_id) {

@@ -1,22 +1,21 @@
 package com.java.retrospective.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.java.retrospective.dao.UserDao;
 import com.java.retrospective.dto.user.UserDto;
 import com.java.retrospective.entity.UserEntity;
 import com.java.retrospective.services.UserService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 
 @Service
-
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-@Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
     @Override
     public UserDto addUser(UserDto user) {
         return convertDataIntoDto(userDao.save(convertDataIntoEntity(user)));

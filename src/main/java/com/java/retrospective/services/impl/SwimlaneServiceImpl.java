@@ -1,28 +1,26 @@
 package com.java.retrospective.services.impl;
 
-import com.java.retrospective.dao.RetrospectiveDao;
-import com.java.retrospective.dao.SwimlaneDao;
-import com.java.retrospective.dto.swimlane.SwimlaneDto;
-import com.java.retrospective.dto.user.UserDto;
-import com.java.retrospective.entity.RetrospectiveEntity;
-import com.java.retrospective.entity.SwimlaneEntity;
-import com.java.retrospective.entity.UserEntity;
-import com.java.retrospective.services.SwimlaneService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.java.retrospective.dao.RetrospectiveDao;
+import com.java.retrospective.dao.SwimlaneDao;
+import com.java.retrospective.dto.swimlane.SwimlaneDto;
+import com.java.retrospective.entity.RetrospectiveEntity;
+import com.java.retrospective.entity.SwimlaneEntity;
+import com.java.retrospective.services.SwimlaneService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class SwimlaneServiceImpl implements SwimlaneService {
 
-    @Autowired
-    private SwimlaneDao swimlaneDao;
+    private final SwimlaneDao swimlaneDao;
     @Autowired
     private RetrospectiveDao retrospectiveDao;
 
