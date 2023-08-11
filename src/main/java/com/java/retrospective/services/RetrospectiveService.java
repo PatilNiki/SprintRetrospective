@@ -12,5 +12,6 @@ public interface RetrospectiveService {
     RetrospectiveOutDto getRetrospective(Integer id);
     String deleteRetrospective(Integer id);
     RetrospectiveOutDto updateRetrospective(Integer id, RetrospectiveInDto retrospective);
+    public RetrospectiveEntity getRetrospectiveEntity(Integer id);
 
 }

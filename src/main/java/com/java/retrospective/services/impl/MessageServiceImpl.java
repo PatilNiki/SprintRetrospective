@@ -1,31 +1,57 @@
 package com.java.retrospective.services.impl;
 
-import com.java.retrospective.dao.MessageDao;
-import com.java.retrospective.dto.message.MessageDto;
-import com.java.retrospective.dto.user.UserDto;
-import com.java.retrospective.entity.MessageEntity;
-import com.java.retrospective.entity.UserEntity;
-import com.java.retrospective.services.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.java.retrospective.dao.MessageDao;
+import com.java.retrospective.dao.RetrospectiveDao;
+import com.java.retrospective.dto.message.MessageInDto;
+import com.java.retrospective.dto.message.MessageOutDto;
+import com.java.retrospective.dto.user.UserDto;
+import com.java.retrospective.entity.MessageEntity;
+import com.java.retrospective.entity.RetrospectiveEntity;
+import com.java.retrospective.entity.UserEntity;
+import com.java.retrospective.mappers.MessageMapper;
+import com.java.retrospective.services.MessageService;
+
+import com.java.retrospective.services.RetrospectiveService;
+import com.java.retrospective.services.SwimlaneService;
+import com.java.retrospective.services.UserService;
+import com.java.retrospective.validator.MessageValidator;
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    @Autowired
-    private MessageDao messageDao;
+    private final MessageDao messageDao;
+    private final MessageMapper messageMapper;
+    private final MessageValidator messageValidator;
+    private final UserService userService;
+    private final SwimlaneService swimlaneService;
+    private final RetrospectiveService retrospectiveService;
 
     @Override
-    public List<MessageDto> getAllMessages(Integer retro_id) {
-        return messageDao.findAll().stream().filter(messageEntity -> messageEntity.getRetrospective().getId().equals(retro_id)).collect(Collectors.toList()).stream().map(this::convertDataIntoDto).collect(Collectors.toList());
+    public List<MessageOutDto> getAllMessages(Integer retro_id) {
+        return messageDao.findAll().stream().filter(messageEntity -> messageEntity.getRetrospective().getId().equals(retro_id)).collect(Collectors.toList()).stream().map(messageMapper::mapEntityToOutDto).collect(Collectors.toList());
     }
 
     @Override
-    public MessageDto addMessage(Integer retro_id, MessageEntity messageEntity) {
-        return convertDataIntoDto(messageDao.save(messageEntity));
+    public MessageOutDto addMessage(Integer retro_id, MessageInDto messageDto) {
+        if(messageValidator.validateForCreate(messageDto)){
+            RetrospectiveEntity retrospectiveEntity= retrospectiveService.getRetrospectiveEntity(retro_id);
+
+            if(retrospectiveEntity != null){
+                MessageEntity messageEntity = messageMapper.mapInDtoToEntity(messageDto);
+                messageEntity.setRetrospective(retrospectiveEntity);
+                messageEntity.setUser(userService.getUserById(messageDto.getUserId()));
+                messageEntity.setSwimlane(swimlaneService.getSwimlaneById(messageDto.getSwimlaneId()));
+                return messageMapper.mapEntityToOutDto(messageDao.save(messageEntity));
+            }
+        }
+        return null;
     }
 
     @Override
@@ -35,21 +61,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDto updateMessage(Integer retro_id, Integer id, String message) {
-        Optional<MessageEntity> optionalMessageEntity = messageDao.findById(id);
-        if(optionalMessageEntity.isPresent()){
-            MessageEntity messageEntity = optionalMessageEntity.get();
-            return convertDataIntoDto(messageDao.save(messageEntity));
+    public MessageOutDto updateMessage(Integer retro_id, Integer id, String message) {
+        if(messageValidator.validateForUpdate(message)) {
+            Optional<MessageEntity> optionalMessageEntity = messageDao.findById(id);
+            if (optionalMessageEntity.isPresent()) {
+                MessageEntity messageEntity = optionalMessageEntity.get();
+                return messageMapper.mapEntityToOutDto(messageDao.save(messageEntity));
+            }
         }
         return null;
     }
 
-    private MessageDto convertDataIntoDto(MessageEntity message){
-        MessageDto messageDto= new MessageDto();
-        messageDto.setMessage(message.getMessage());
-        messageDto.setUser(message.getUser());
-        messageDto.setRetrospective(message.getRetrospective());
-        messageDto.setSwimlane(message.getSwimlane());
-        return messageDto;
-    }
 }

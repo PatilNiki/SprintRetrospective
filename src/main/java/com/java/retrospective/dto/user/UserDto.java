@@ -1,30 +1,13 @@
 package com.java.retrospective.dto.user;
 
-import lombok.*;
+import lombok.Data;
 
-import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @Data
 public class UserDto {
+    @NotNull
     private String username;
+    @NotNull
     private String password;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

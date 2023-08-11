@@ -1,29 +1,35 @@
 package com.java.retrospective.controller;
 
-import com.java.retrospective.dto.swimlane.SwimlaneDto;
-import com.java.retrospective.entity.SwimlaneEntity;
-import com.java.retrospective.services.SwimlaneService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.java.retrospective.dto.swimlane.SwimlaneInDto;
+import com.java.retrospective.dto.swimlane.SwimlaneOutDto;
+import com.java.retrospective.services.SwimlaneService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/retrospective/{retro_id}/swimlanes")
+@RequestMapping(value = "/retrospectives/{retro_id}/swimlanes")
 @AllArgsConstructor
 public class SwimlaneController {
-    @Autowired
-    SwimlaneService swimlaneService;
+    private final SwimlaneService swimlaneService;
 
     @GetMapping
-    public List<SwimlaneDto> getSwimlanes(@PathVariable Integer retro_id){
+    public List<SwimlaneOutDto> getSwimlanes(@PathVariable Integer retro_id){
         return swimlaneService.getAllSwimlanes(retro_id);
     }
 
     @PostMapping
-    public String addSwimlanes(@PathVariable Integer retro_id, @RequestBody String swimlane_title){
+    public String addSwimlanes(@PathVariable Integer retro_id, @RequestBody SwimlaneInDto swimlane_title){
+//        System.out.println("Swimlane title: "+swimlane_title);
         return "Added: "+swimlaneService.addSwimlane(retro_id, swimlane_title);
     }
 

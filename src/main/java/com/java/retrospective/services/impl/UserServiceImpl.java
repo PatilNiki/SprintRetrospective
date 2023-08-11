@@ -1,43 +1,53 @@
 package com.java.retrospective.services.impl;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.java.retrospective.dao.UserDao;
 import com.java.retrospective.dto.user.UserDto;
 import com.java.retrospective.entity.UserEntity;
+import com.java.retrospective.mappers.UserMapper;
 import com.java.retrospective.services.UserService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import com.java.retrospective.validator.UserValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 
 @Service
-
+@Slf4j
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-@Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final UserMapper userMapper;
+    private final UserValidator userValidator;
     @Override
     public UserDto addUser(UserDto user) {
-        return convertDataIntoDto(userDao.save(convertDataIntoEntity(user)));
+        if(userValidator.validateForCreate(user)) {
+            return userMapper.mapEntityToDto(userDao.save(userMapper.mapDtoToEntity(user)));
+        }
+        return null;
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userDao.findAll().stream().map(this::convertDataIntoDto).collect(Collectors.toList());
+        return userDao.findAll().stream().map(userMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
-    private UserDto convertDataIntoDto(UserEntity user){
-        UserDto userDto= new UserDto();
-        userDto.setUsername(user.getUsername());
-        userDto.setPassword(user.getPassword());
-        return userDto;
+    @Override
+    public UserEntity getUserById(Integer id) {
+        return userDao.findById(id).orElse(null);
     }
 
-    private UserEntity convertDataIntoEntity(UserDto user){
-        UserEntity userEntity= new UserEntity();
-        userEntity.setUsername(user.getUsername());
-        userEntity.setPassword(user.getPassword());
-        return userEntity;
+    public Boolean checkIfAdmin(Integer id){
+        Optional<UserEntity> optionalUserEntity = userDao.findById(id);
+        if(optionalUserEntity.isPresent()){
+            UserEntity user = optionalUserEntity.get();
+            return user.getUsername().equals("Admin") && user.getPassword().equals("Admin");
+        }
+        else return false;
     }
+
 }

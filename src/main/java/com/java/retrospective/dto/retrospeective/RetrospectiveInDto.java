@@ -1,31 +1,13 @@
 package com.java.retrospective.dto.retrospeective;
 
-import com.java.retrospective.entity.SwimlaneEntity;
-import lombok.*;
+import lombok.Data;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-@ToString
 public class RetrospectiveInDto {
+    @NotNull
     private String title;
+    @NotNull
     private String description;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

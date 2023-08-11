@@ -1,22 +1,27 @@
 package com.java.retrospective.controller;
 
-import com.java.retrospective.dao.RetrospectiveDao;
+import java.util.List;
+
 import com.java.retrospective.dto.retrospeective.RetrospectiveInDto;
 import com.java.retrospective.dto.retrospeective.RetrospectiveOutDto;
-import com.java.retrospective.entity.RetrospectiveEntity;
 import com.java.retrospective.services.RetrospectiveService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping(value = "/retrospectives")
 @AllArgsConstructor
 public class RetrospectiveController {
-    @Autowired
-    RetrospectiveService retrospectiveService;
+    private final RetrospectiveService retrospectiveService;
 
     @GetMapping
     public List<RetrospectiveOutDto> getRetrospectives(){
@@ -25,7 +30,10 @@ public class RetrospectiveController {
 
     @PostMapping
     public RetrospectiveOutDto addRetrospective(@RequestBody RetrospectiveInDto retrospective){
-        return retrospectiveService.addRetrospective(retrospective);
+        RetrospectiveOutDto retrospectiveOutDto = retrospectiveService.addRetrospective(retrospective);
+        if(retrospectiveOutDto!=null)
+            return retrospectiveOutDto;
+        return null;
     }
 
     @GetMapping(value = "/{id}")

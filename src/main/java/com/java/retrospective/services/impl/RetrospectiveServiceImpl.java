@@ -1,41 +1,44 @@
 package com.java.retrospective.services.impl;
 
-import com.java.retrospective.dao.RetrospectiveDao;
-import com.java.retrospective.dto.retrospeective.RetrospectiveInDto;
-import com.java.retrospective.dto.retrospeective.RetrospectiveOutDto;
-import com.java.retrospective.entity.RetrospectiveEntity;
-import com.java.retrospective.services.RetrospectiveService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.java.retrospective.dao.RetrospectiveDao;
+import com.java.retrospective.dto.retrospeective.RetrospectiveInDto;
+import com.java.retrospective.dto.retrospeective.RetrospectiveOutDto;
+import com.java.retrospective.entity.RetrospectiveEntity;
+import com.java.retrospective.mappers.RetrospectiveMapper;
+import com.java.retrospective.services.RetrospectiveService;
+
+import com.java.retrospective.validator.RetrospectiveValidator;
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class RetrospectiveServiceImpl implements RetrospectiveService {
-    @Autowired
-    RetrospectiveDao retrospectiveDao;
+    private final RetrospectiveDao retrospectiveDao;
+    private final RetrospectiveMapper retrospectiveMapper;
+    private final RetrospectiveValidator retrospectiveValidator;
 
     @Override
     public List<RetrospectiveOutDto> getAllRetrospectives() {
-        return retrospectiveDao.findAll().stream().map(this::convertDataIntoDto).collect(Collectors.toList());
+        return retrospectiveDao.findAll().stream().map(retrospectiveMapper::mapEntityToOutDto).collect(Collectors.toList());
     }
 
     @Override
     public RetrospectiveOutDto addRetrospective(RetrospectiveInDto retrospectiveInDto) {
-        return convertDataIntoDto(retrospectiveDao.save(convertDataIntoEntity(retrospectiveInDto)));
+        if(retrospectiveValidator.validateForCreate(retrospectiveInDto)) {
+            return retrospectiveMapper.mapEntityToOutDto(retrospectiveDao.save(retrospectiveMapper.mapInDtoToEntity(retrospectiveInDto)));
+        }
+        return null;
     }
 
     @Override
     public RetrospectiveOutDto getRetrospective(Integer id) {
-        Optional<RetrospectiveEntity> optionalRetrospectiveEntity = retrospectiveDao.findById(id);
-        if(optionalRetrospectiveEntity.isPresent()){
-            return convertDataIntoDto(optionalRetrospectiveEntity.get());
-        }
-        return null;
+        return retrospectiveMapper.mapEntityToOutDto(retrospectiveDao.findById(id).orElse(null));
     }
 
     @Override
@@ -46,28 +49,19 @@ public class RetrospectiveServiceImpl implements RetrospectiveService {
 
     @Override
     public RetrospectiveOutDto updateRetrospective(Integer id, RetrospectiveInDto retrospective) {
-        Optional<RetrospectiveEntity> optionalRetrospectiveEntity = retrospectiveDao.findById(id);
-        if(optionalRetrospectiveEntity.isPresent()){
-            RetrospectiveEntity retrospectiveEntity = optionalRetrospectiveEntity.get();
-            retrospectiveEntity.setTitle(retrospective.getTitle());
-            retrospectiveEntity.setDescription(retrospective.getDescription());
-            return convertDataIntoDto(retrospectiveDao.save(retrospectiveEntity));
+        if(retrospectiveValidator.validateForCreate(retrospective)) {
+            RetrospectiveEntity retrospectiveEntity = retrospectiveDao.findById(id).orElse(null);
+            if(retrospectiveEntity!=null) {
+                retrospectiveEntity.setTitle(retrospective.getTitle());
+                retrospectiveEntity.setDescription(retrospective.getDescription());
+                return retrospectiveMapper.mapEntityToOutDto(retrospectiveDao.save(retrospectiveEntity));
+            }
         }
         return null;
     }
 
-    private RetrospectiveOutDto convertDataIntoDto(RetrospectiveEntity retrospective){
-        RetrospectiveOutDto retrospectiveDto= new RetrospectiveOutDto();
-        retrospectiveDto.setTitle(retrospective.getTitle());
-        retrospectiveDto.setDescription(retrospective.getDescription());
-        retrospectiveDto.setSwimlanes(retrospective.getSwimlanes());
-        return retrospectiveDto;
-    }
-
-    private RetrospectiveEntity convertDataIntoEntity(RetrospectiveInDto retrospectiveInDto){
-        RetrospectiveEntity retrospectiveEntity= new RetrospectiveEntity();
-        retrospectiveEntity.setTitle(retrospectiveInDto.getTitle());
-        retrospectiveEntity.setDescription(retrospectiveInDto.getDescription());
-        return retrospectiveEntity;
+    @Override
+    public RetrospectiveEntity getRetrospectiveEntity(Integer id) {
+        return retrospectiveDao.findById(id).orElse(null);
     }
 }
